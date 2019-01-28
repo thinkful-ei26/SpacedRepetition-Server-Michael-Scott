@@ -1,5 +1,3 @@
-"use strict";
-
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 
@@ -19,7 +17,13 @@ const schema = new mongoose.Schema({
   },
   email: {
     type: String
-  }
+  },
+  question: [{
+    questionId: {type: mongoose.Schema.Types.ObjectId, ref: 'Question'},
+    // score: { type: Number, required: true},
+    // next: {type: Number, required: true},
+    // index: {type: Number, required: true}
+  }]
 });
 
 schema.methods.serialize = function() {
