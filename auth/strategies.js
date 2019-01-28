@@ -5,7 +5,7 @@ const { Strategy: LocalStrategy } = require("passport-local");
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Assigning_to_new_variable_names
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 
-const { User } = require("../models/users");
+const { User } = require("../models/user");
 const config = require("../config");
 
 const localStrategy = new LocalStrategy((username, password, callback) => {
