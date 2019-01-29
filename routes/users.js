@@ -173,6 +173,30 @@ router.get("/", (req, res) => {
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 
+/*
+return a single question to the client
+next level return based on algorithm
+*/
+router.get("/next", jwtAuth, (req, res) => {
+  const id = req.user.id;
+  /*
+logic for choosing the next question is needed
+
+math.random 
+
+*/
+  return User.findOne({ _id: id })
+    .then(user => {
+      const rando = Math.floor(
+        Math.random() * user.getQuestions().question.length
+      );
+      console.log(rando);
+      console.log(user.getQuestions().question[rando]);
+      res.json(user.getQuestions().question[rando]);
+    })
+    .catch(err => res.status(500).json({ message: "Internal server error" }));
+});
+
 // create a route that adds a wrong questions to the user who made it
 /*
 Current objective is to be able to use this endpoint to update the scores using a postman request

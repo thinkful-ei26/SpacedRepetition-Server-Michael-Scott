@@ -25,7 +25,13 @@ schema.methods.serialize = function() {
   return {
     username: this.username || "",
     firstName: this.firstName || "",
-    id: this._id,
+    id: this._id
+    // question: this.question
+  };
+};
+
+schema.methods.getQuestions = function() {
+  return {
     question: this.question
   };
 };
