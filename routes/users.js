@@ -5,7 +5,7 @@ const { User } = require("../models/user");
 const router = express.Router();
 const jsonParser = bodyParser.json();
 const { ExtractJwt } = require("passport-jwt");
-
+const Question = require("../models/question");
 const jwtAuth = passport.authenticate("jwt", { session: false });
 
 router.post("/", jsonParser, (req, res) => {
@@ -80,6 +80,10 @@ router.post("/", jsonParser, (req, res) => {
   let { username, password, firstName } = req.body;
   firstName = firstName.trim();
 
+  /*
+Auto populate the question when the user is being created.
+We might want to create an extension of being able to add a new set of questions while keeping old data.
+*/
   return User.find({ username })
     .count()
     .then(count => {
@@ -94,10 +98,16 @@ router.post("/", jsonParser, (req, res) => {
       return User.hashPassword(password);
     })
     .then(hash => {
+      return Question.find().then(questionset => {
+        return { hash, questionset };
+      });
+    })
+    .then(data => {
       return User.create({
         username,
-        password: hash,
-        firstName
+        password: data.hash,
+        firstName,
+        question: data.questionset
       });
     })
     .then(user => {
@@ -111,16 +121,74 @@ router.post("/", jsonParser, (req, res) => {
     });
 });
 
+// normal version
+//   return User.find({ username })
+//     .count()
+//     .then(count => {
+//       console.log(questions);
+//       if (count > 0) {
+//         return Promise.reject({
+//           code: 422,
+//           reason: "ValidationError",
+//           message: "Username already taken",
+//           location: "username"
+//         });
+//       }
+//       return User.hashPassword(password);
+//     })
+//     .then(hash => {
+//       return User.create({
+//         username,
+//         password: hash,
+//         firstName,
+//         questions
+//       });
+//     })
+//     .then(user => {
+//       return res.status(201).json(user.serialize());
+//     })
+//     .catch(err => {
+//       if (err.reason === "ValidationError") {
+//         return res.status(err.code).json(err);
+//       }
+//       res.status(500).json({ code: 500, message: "Internal server error" });
+//     });
+// });
+
 router.delete("/", jwtAuth, (req, res) => {
   const id = req.user.id;
   return User.findOneAndDelete({ _id: id })
     .then(users => res.json(users.serialize()))
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
+router.delete("/purge", (req, res) => {
+  return User.deleteMany()
+    .then(() => res.sendStatus(204))
+    .catch(err => res.status(500).json({ message: "Internal server error" }));
+});
 
 router.get("/", (req, res) => {
   return User.find()
     .then(users => res.json(users.map(user => user.serialize())))
+    .catch(err => res.status(500).json({ message: "Internal server error" }));
+});
+
+// create a route that adds a wrong questions to the user who made it
+/*
+Current objective is to be able to use this endpoint to update the scores using a postman request
+
+*/
+router.put("/submit", jwtAuth, (req, res) => {
+  const id = req.user.id;
+  console.log(req.user);
+  console.log(req.body);
+  const { updatedArr } = req.body;
+  /* info from the body: array thats updated
+   promise to put the new array in place
+  */
+  console.log(question);
+  return User.findOneAndUpdate({ _id: id }, { question: updatedArr })
+    .then(users => res.json(users.serialize()))
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 

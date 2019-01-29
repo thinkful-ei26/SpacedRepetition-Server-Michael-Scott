@@ -29,6 +29,16 @@ app.use(
   })
 );
 
+// Update version of bodyparser built into express
+/*
+const bodyParser = require('body-parser');
+
+const jsonParser = bodyParser.json();
+
+express.json()
+*/
+app.use(express.json());
+
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 app.use("/users/", userRouter);
