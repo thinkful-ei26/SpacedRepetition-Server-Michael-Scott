@@ -190,8 +190,8 @@ math.random
       const rando = Math.floor(
         Math.random() * user.getQuestions().question.length
       );
-      console.log(rando);
-      console.log(user.getQuestions().question[rando]);
+      // console.log(rando);
+      // console.log(user.getQuestions().question[rando]);
       res.json(user.getQuestions().question[rando]);
     })
     .catch(err => res.status(500).json({ message: "Internal server error" }));
@@ -203,15 +203,15 @@ Current objective is to be able to use this endpoint to update the scores using 
 
 */
 router.put("/submit", jwtAuth, (req, res) => {
-  const id = req.user.id;
-  console.log(req.user);
+  const userId = req.user.id;
+  const { score, id } = req.body;
   console.log(req.body);
-  const { updatedArr } = req.body;
+  console.log("score:", score);
+  console.log("id:", id);
   /* info from the body: array thats updated
    promise to put the new array in place
   */
-  console.log(question);
-  return User.findOne({ _id: id })
+  return User.findOne({ _id: userId })
     .then(users => {
       users.getQuestions();
     })
