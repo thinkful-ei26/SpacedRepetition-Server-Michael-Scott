@@ -78,6 +78,7 @@ router.post("/", jsonParser, (req, res) => {
   }
 
   let { username, password, firstName } = req.body;
+  let questions = [];
   firstName = firstName.trim();
 
   return User.find({ username })
@@ -97,7 +98,8 @@ router.post("/", jsonParser, (req, res) => {
       return User.create({
         username,
         password: hash,
-        firstName
+        firstName,
+        questions
       });
     })
     .then(user => {
@@ -121,6 +123,18 @@ router.delete("/", jwtAuth, (req, res) => {
 router.get("/", (req, res) => {
   return User.find()
     .then(users => res.json(users.map(user => user.serialize())))
+    .catch(err => res.status(500).json({ message: "Internal server error" }));
+});
+
+// create a route that adds a wrong questions to the user who made it
+router.put("/submit", jwtAuth, (req, res) => {
+  const id = req.user.id;
+  console.log(req.user);
+  console.log(req.body);
+  let { question } = req.body;
+  console.log(question);
+  return User.findOneAndUpdate({ _id: id }, { question })
+    .then(users => res.json(users.serialize()))
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 
