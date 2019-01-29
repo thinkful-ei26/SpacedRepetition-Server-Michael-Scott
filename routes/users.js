@@ -205,17 +205,36 @@ Current objective is to be able to use this endpoint to update the scores using 
 router.put("/submit", jwtAuth, (req, res) => {
   const userId = req.user.id;
   const { score, id } = req.body;
-  console.log(req.body);
-  console.log("score:", score);
-  console.log("id:", id);
+  // console.log(req.body);
+  // console.log("score:", score);
+  // console.log("id:", id);
   /* info from the body: array thats updated
    promise to put the new array in place
   */
   return User.findOne({ _id: userId })
     .then(users => {
-      users.getQuestions();
+      const temp = users.getQuestions();
+      const revised = temp.question.map(element => {
+        if (element._id == id) {
+          element.score = score;
+          console.log("LINE 220 :", element);
+          return element;
+        } else {
+          return element;
+        }
+      });
+      // replace the old array
+
+      return revised;
     })
-    .catch(err => res.status(500).json({ message: "Internal server error" }));
+    .then(revised => {
+      return User.findOneAndUpdate(
+        { _id: userId },
+        { question: revised },
+        { new: true }
+      ).then(res => console.log("LINE 232 :", res));
+    })
+    .catch(err => res.status(500).json(err));
 });
 
 module.exports = router;
