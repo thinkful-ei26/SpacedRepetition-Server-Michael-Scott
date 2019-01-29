@@ -161,6 +161,11 @@ router.delete("/", jwtAuth, (req, res) => {
     .then(users => res.json(users.serialize()))
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
+router.delete("/purge", (req, res) => {
+  return User.deleteMany()
+    .then(() => res.sendStatus(204))
+    .catch(err => res.status(500).json({ message: "Internal server error" }));
+});
 
 router.get("/", (req, res) => {
   return User.find()
@@ -169,18 +174,20 @@ router.get("/", (req, res) => {
 });
 
 // create a route that adds a wrong questions to the user who made it
+/*
+Current objective is to be able to use this endpoint to update the scores using a postman request
+
+*/
 router.put("/submit", jwtAuth, (req, res) => {
   const id = req.user.id;
   console.log(req.user);
   console.log(req.body);
-  let { question } = req.body;
+  const { updatedArr } = req.body;
+  /* info from the body: array thats updated
+   promise to put the new array in place
+  */
   console.log(question);
-
-  return User.findOne({ _id: id }).then(user => {
-    return user.question;
-  }).then;
-
-  return User.findOneAndUpdate({ _id: id }, { question: [{ question }] })
+  return User.findOneAndUpdate({ _id: id }, { question: updatedArr })
     .then(users => res.json(users.serialize()))
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
