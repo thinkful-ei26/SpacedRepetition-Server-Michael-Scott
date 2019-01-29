@@ -24,6 +24,17 @@ router.get("/", jwtAuth, (req, res, next) => {
     });
 });
 
+router.get("/all", (req, res, next) => {
+  Question.find()
+    .sort({ createdAt: "desc" })
+    .then(sessions => {
+      res.json(sessions);
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
 router.post("/", jwtAuth, (req, res, next) => {
   const newQuestion = req.body;
   const userId = req.user.id;

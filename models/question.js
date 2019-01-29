@@ -1,16 +1,16 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const sessionSchema = new mongoose.Schema({
-  answer: {type: String, required: false},
-  question:  {type: String, required: false},
-
+  answer: { type: String, required: true },
+  question: { type: String, required: true },
+  score: { type: Number, default: 0 }
 });
 
 // Add `createdAt` and `updatedAt` fields
-sessionSchema.set('timestamps', true);
+sessionSchema.set("timestamps", true);
 
 // Transform output during `res.json(data)`, `console.log(data)` etc.
-sessionSchema.set('toJSON', {
+sessionSchema.set("toJSON", {
   virtuals: true,
   transform: (doc, result) => {
     delete result._id;
@@ -18,4 +18,4 @@ sessionSchema.set('toJSON', {
   }
 });
 
-module.exports = mongoose.model('Question', sessionSchema);
+module.exports = mongoose.model("Question", sessionSchema);
