@@ -211,8 +211,10 @@ router.put("/submit", jwtAuth, (req, res) => {
    promise to put the new array in place
   */
   console.log(question);
-  return User.findOneAndUpdate({ _id: id }, { question: updatedArr })
-    .then(users => res.json(users.serialize()))
+  return User.findOne({ _id: id })
+    .then(users => {
+      users.getQuestions();
+    })
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 
