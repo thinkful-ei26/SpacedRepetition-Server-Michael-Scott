@@ -193,7 +193,9 @@ router.get("/next", jwtAuth, (req, res) => {
 
   return User.findOne({ _id: id })
     .then(user => {
-      res.json(user.getQuestions().question[req.user.head]);
+      console.log(user.head);
+      console.log("test :", user.getQuestions().question[user.head]);
+      res.json(user.getQuestions().question[user.head]);
     })
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
