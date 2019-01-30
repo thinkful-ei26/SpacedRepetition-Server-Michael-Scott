@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const sessionSchema = new mongoose.Schema({
   answer: { type: String, required: true },
   question: { type: String, required: true },
-  score: { type: Number, default: 1 }
+  score: { type: Number, default: 1 },
+  next: { type: Number, default: null }
 });
 
 // Add `createdAt` and `updatedAt` fields

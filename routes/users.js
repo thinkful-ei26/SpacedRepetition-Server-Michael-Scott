@@ -180,59 +180,105 @@ next level return based on algorithm
 router.get("/next", jwtAuth, (req, res) => {
   const id = req.user.id;
   /*
-logic for choosing the next question is needed
+  
+  Create Algorithm logic so that we do these things:
+  1. set head value to the new value
+    promise to User.something to set value PUT request
+  2. determine the spot for the answered question depending on m value
 
-math.random 
+  3. set the next values for the item being reentered into the list
+  4. add checks to length so that an item with higher m value than length goes to the end
 
 */
+
   return User.findOne({ _id: id })
     .then(user => {
-      const rando = Math.floor(
-        Math.random() * user.getQuestions().question.length
-      );
-      // console.log(rando);
-      // console.log(user.getQuestions().question[rando]);
-      res.json(user.getQuestions().question[rando]);
+      console.log(user.head);
+      console.log("test :", user.getQuestions().question[user.head]);
+      res.json(user.getQuestions().question[user.head]);
     })
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 
-// create a route that adds a wrong questions to the user who made it
-/*
-Current objective is to be able to use this endpoint to update the scores using a postman request
-
-*/
 router.put("/submit", jwtAuth, (req, res) => {
   const userId = req.user.id;
-  const { score, id } = req.body;
-  // console.log(req.body);
-  // console.log("score:", score);
-  // console.log("id:", id);
-  /* info from the body: array thats updated
-   promise to put the new array in place
+  const { answer } = req.body;
+
+  // return res.sendStatus(200);
+
+  /*
+  input: answer
+  output: modified the correct question with score and changing the nexts/head
+
+  when looping through the elements if the   
+
   */
+
   return User.findOne({ _id: userId })
     .then(users => {
-      const temp = users.getQuestions();
-      const revised = temp.question.map(element => {
-        if (element._id == id) {
-          element.score = score;
-          console.log("LINE 220 :", element);
-          return element;
-        } else {
-          return element;
-        }
-      });
-      // replace the old array
+      let temp = users.getQuestions().question;
+      // then access the headith item of the
+      console.log(answer);
+      console.log(temp[users.head].answer);
 
-      return revised;
+      if (temp[users.head].answer === answer) {
+        temp[users.head].score *= 2;
+        // console.log(temp.length);
+        // console.log(temp[users.head].score);
+        if (temp[users.head].score >= temp.length) {
+          let switcher = temp[users.head].next;
+          // console.log(switcher);
+          temp[users.tail].next = users.head;
+          users.tail = users.head;
+          temp[users.head].next = null;
+          users.head = switcher;
+        } else {
+          // place the item at the score index and dont mess up the next
+          // traverse score items then place item
+          let currNode = temp[users.head];
+          let prevNode = temp[users.head];
+          let i = 0;
+          // // can be above or below depending on this greater than symbol
+
+          while (i < temp[users.head].score) {
+            prevNode = currNode;
+            currNode = temp[currNode.next];
+            i++;
+          }
+          // switch all the pointers to match correctly
+          let tempH = prevNode.next;
+          let tempP = temp[users.head].next;
+          prevNode.next = users.head;
+          temp[users.head].next = tempH;
+          users.head = tempP;
+          console.log("head :", users.head);
+        }
+        // if its not greater than array length
+      } else {
+        temp[users.head].score = 1;
+      }
+
+      // console.log(temp[users.head].next);
+      // console.log(temp[temp[users.head].next]);
+      users.questions = temp;
+      users.questions.forEach(element => {
+        console.log("/////////////");
+        console.log(element.answer);
+        console.log(element.score);
+        console.log(element.next);
+        console.log("/////////////");
+      });
+
+      return users;
     })
     .then(revised => {
+      console.log("end");
+      console.log("head :", revised.head);
       return User.findOneAndUpdate(
         { _id: userId },
-        { question: revised },
+        { question: revised.question, head: revised.head, tail: revised.tail },
         { new: true }
-      ).then(res => console.log("LINE 232 :", res));
+      ).then(() => res.sendStatus(200));
     })
     .catch(err => res.status(500).json(err));
 });
