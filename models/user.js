@@ -18,14 +18,18 @@ const schema = new mongoose.Schema({
   email: {
     type: String
   },
-  question: []
+  question: [],
+  head: { type: Number, default: 0 },
+  tail: { type: Number, default: 9 }
 });
 
 schema.methods.serialize = function() {
   return {
     username: this.username || "",
     firstName: this.firstName || "",
-    id: this._id
+    id: this._id,
+    head: this.head,
+    tail: this.tail
     // question: this.question
   };
 };
