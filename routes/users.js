@@ -255,7 +255,26 @@ router.put("/submit", jwtAuth, (req, res) => {
         }
         // if its not greater than array length
       } else {
+        // HERE IS THE WRONG CODE SECTION
         temp[users.head].score = 1;
+
+        let currNode = temp[users.head];
+        let prevNode = temp[users.head];
+        let i = 0;
+        let target = 3;
+        // // can be above or below depending on this greater than symbol
+
+        while (i < target) {
+          prevNode = currNode;
+          currNode = temp[currNode.next];
+          i++;
+        }
+
+        let tempH = prevNode.next;
+        let tempP = temp[users.head].next;
+        prevNode.next = users.head;
+        temp[users.head].next = tempH;
+        users.head = tempP;
       }
 
       // console.log(temp[users.head].next);
