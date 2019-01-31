@@ -15,6 +15,7 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+  progress: { type: Number, default: 0 },
   correct: {
     type: Boolean,
     default: null
@@ -30,7 +31,6 @@ schema.methods.serialize = function() {
     firstName: this.firstName || "",
     id: this._id,
     head: this.head,
-    correct: this.correct,
     tail: this.tail
     // question: this.question
   };

@@ -121,40 +121,6 @@ We might want to create an extension of being able to add a new set of questions
     });
 });
 
-// normal version
-//   return User.find({ username })
-//     .count()
-//     .then(count => {
-//       console.log(questions);
-//       if (count > 0) {
-//         return Promise.reject({
-//           code: 422,
-//           reason: "ValidationError",
-//           message: "Username already taken",
-//           location: "username"
-//         });
-//       }
-//       return User.hashPassword(password);
-//     })
-//     .then(hash => {
-//       return User.create({
-//         username,
-//         password: hash,
-//         firstName,
-//         questions
-//       });
-//     })
-//     .then(user => {
-//       return res.status(201).json(user.serialize());
-//     })
-//     .catch(err => {
-//       if (err.reason === "ValidationError") {
-//         return res.status(err.code).json(err);
-//       }
-//       res.status(500).json({ code: 500, message: "Internal server error" });
-//     });
-// });
-
 router.delete("/", jwtAuth, (req, res) => {
   const id = req.user.id;
   return User.findOneAndDelete({ _id: id })
@@ -193,11 +159,10 @@ router.get("/next", jwtAuth, (req, res) => {
 
   return User.findOne({ _id: id })
     .then(user => {
-      console.log(user.head);
-      console.log("test :", user.getQuestions().question[user.head]);
       res.json({
         question: user.getQuestions().question[user.head],
-        correct: user.correct
+        correct: user.correct,
+        progress: user.progress
       });
     })
     .catch(err => res.status(500).json({ message: "Internal server error" }));
@@ -259,7 +224,6 @@ router.put("/submit", jwtAuth, (req, res) => {
       } else {
         // HERE IS THE WRONG CODE SECTION
         users.correct = false;
-        console.log(users.correct);
         temp[users.head].score = 1;
 
         let currNode = temp[users.head];
@@ -283,20 +247,25 @@ router.put("/submit", jwtAuth, (req, res) => {
 
       // console.log(temp[users.head].next);
       // console.log(temp[temp[users.head].next]);
+      console.log(users.progress);
+
       users.questions = temp;
+      users.progress = 0;
       users.questions.forEach(element => {
+        if (element.score > 7) {
+          users.progress += 1;
+        }
         // console.log("/////////////");
         // console.log(element.answer);
         // console.log(element.score);
         // console.log(element.next);
         // console.log("/////////////");
       });
+      console.log(users.progress);
 
       return users;
     })
     .then(revised => {
-      console.log("end");
-      console.log("head :", revised.head);
       return User.findOneAndUpdate(
         { _id: userId },
         {
