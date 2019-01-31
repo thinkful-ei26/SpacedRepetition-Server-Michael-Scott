@@ -15,8 +15,9 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
-  email: {
-    type: String
+  correct: {
+    type: Boolean,
+    default: null
   },
   question: [],
   head: { type: Number, default: 0 },
@@ -29,6 +30,7 @@ schema.methods.serialize = function() {
     firstName: this.firstName || "",
     id: this._id,
     head: this.head,
+    correct: this.correct,
     tail: this.tail
     // question: this.question
   };

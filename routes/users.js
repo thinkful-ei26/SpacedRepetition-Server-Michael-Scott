@@ -195,7 +195,10 @@ router.get("/next", jwtAuth, (req, res) => {
     .then(user => {
       console.log(user.head);
       console.log("test :", user.getQuestions().question[user.head]);
-      res.json(user.getQuestions().question[user.head]);
+      res.json({
+        question: user.getQuestions().question[user.head],
+        correct: user.correct
+      });
     })
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
@@ -218,10 +221,10 @@ router.put("/submit", jwtAuth, (req, res) => {
     .then(users => {
       let temp = users.getQuestions().question;
       // then access the headith item of the
-      console.log(answer);
-      console.log(temp[users.head].answer);
 
       if (temp[users.head].answer === answer) {
+        // modify user when correct
+        users.correct = true;
         temp[users.head].score *= 2;
         // console.log(temp.length);
         // console.log(temp[users.head].score);
@@ -251,11 +254,12 @@ router.put("/submit", jwtAuth, (req, res) => {
           prevNode.next = users.head;
           temp[users.head].next = tempH;
           users.head = tempP;
-          console.log("head :", users.head);
         }
         // if its not greater than array length
       } else {
         // HERE IS THE WRONG CODE SECTION
+        users.correct = false;
+        console.log(users.correct);
         temp[users.head].score = 1;
 
         let currNode = temp[users.head];
@@ -281,11 +285,11 @@ router.put("/submit", jwtAuth, (req, res) => {
       // console.log(temp[temp[users.head].next]);
       users.questions = temp;
       users.questions.forEach(element => {
-        console.log("/////////////");
-        console.log(element.answer);
-        console.log(element.score);
-        console.log(element.next);
-        console.log("/////////////");
+        // console.log("/////////////");
+        // console.log(element.answer);
+        // console.log(element.score);
+        // console.log(element.next);
+        // console.log("/////////////");
       });
 
       return users;
@@ -295,7 +299,12 @@ router.put("/submit", jwtAuth, (req, res) => {
       console.log("head :", revised.head);
       return User.findOneAndUpdate(
         { _id: userId },
-        { question: revised.question, head: revised.head, tail: revised.tail },
+        {
+          question: revised.question,
+          head: revised.head,
+          tail: revised.tail,
+          correct: revised.correct
+        },
         { new: true }
       ).then(() => res.sendStatus(200));
     })
