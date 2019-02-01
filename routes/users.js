@@ -247,7 +247,6 @@ router.put("/submit", jwtAuth, (req, res) => {
 
       // console.log(temp[users.head].next);
       // console.log(temp[temp[users.head].next]);
-      console.log(users.progress);
 
       users.questions = temp;
       users.progress = 0;
@@ -255,13 +254,7 @@ router.put("/submit", jwtAuth, (req, res) => {
         if (element.score > 7) {
           users.progress += 1;
         }
-        // console.log("/////////////");
-        // console.log(element.answer);
-        // console.log(element.score);
-        // console.log(element.next);
-        // console.log("/////////////");
       });
-      console.log(users.progress);
 
       return users;
     })
@@ -272,7 +265,8 @@ router.put("/submit", jwtAuth, (req, res) => {
           question: revised.question,
           head: revised.head,
           tail: revised.tail,
-          correct: revised.correct
+          correct: revised.correct,
+          progress: revised.progress
         },
         { new: true }
       ).then(() => res.sendStatus(200));
