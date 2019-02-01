@@ -145,17 +145,6 @@ next level return based on algorithm
 */
 router.get("/next", jwtAuth, (req, res) => {
   const id = req.user.id;
-  /*
-
-  Create Algorithm logic so that we do these things:
-  1. set head value to the new value
-    promise to User.something to set value PUT request
-  2. determine the spot for the answered question depending on m value
-
-  3. set the next values for the item being reentered into the list
-  4. add checks to length so that an item with higher m value than length goes to the end
-
-*/
 
   return User.findOne({ _id: id })
     .then(user => {
@@ -173,15 +162,7 @@ router.put("/submit", jwtAuth, (req, res) => {
   const userId = req.user.id;
   const { answer } = req.body;
 
-  // return res.sendStatus(200);
-
-  /*
-  input: answer
-  output: modified the correct question with score and changing the nexts/head
-
-  when looping through the elements if the
-
-  */
+  // test the answer from the body
 
   return User.findOne({ _id: userId })
     .then(users => {
@@ -193,11 +174,8 @@ router.put("/submit", jwtAuth, (req, res) => {
         users.correct = true;
         users.last = answer;
         temp[users.head].score *= 2;
-        // console.log(temp.length);
-        // console.log(temp[users.head].score);
         if (temp[users.head].score >= temp.length) {
           let switcher = temp[users.head].next;
-          // console.log(switcher);
           temp[users.tail].next = users.head;
           users.tail = users.head;
           temp[users.head].next = null;
@@ -224,7 +202,6 @@ router.put("/submit", jwtAuth, (req, res) => {
         }
         // if its not greater than array length
       } else {
-        // HERE IS THE WRONG CODE SECTION
         users.last = answer;
         users.correct = false;
         temp[users.head].score = 1;
@@ -233,7 +210,6 @@ router.put("/submit", jwtAuth, (req, res) => {
         let prevNode = temp[users.head];
         let i = 0;
         let target = 3;
-        // // can be above or below depending on this greater than symbol
 
         while (i < target) {
           prevNode = currNode;
@@ -247,9 +223,6 @@ router.put("/submit", jwtAuth, (req, res) => {
         temp[users.head].next = tempH;
         users.head = tempP;
       }
-
-      // console.log(temp[users.head].next);
-      // console.log(temp[temp[users.head].next]);
 
       users.questions = temp;
       users.progress = 0;
