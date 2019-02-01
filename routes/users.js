@@ -162,6 +162,7 @@ router.get("/next", jwtAuth, (req, res) => {
       res.json({
         question: user.getQuestions().question[user.head],
         correct: user.correct,
+        last: user.last,
         progress: user.progress
       });
     })
@@ -187,9 +188,10 @@ router.put("/submit", jwtAuth, (req, res) => {
       let temp = users.getQuestions().question;
       // then access the headith item of the
 
-      if (temp[users.head].answer === answer) {
+      if (temp[users.head].answer === answer.toLowerCase()) {
         // modify user when correct
         users.correct = true;
+        users.last = answer;
         temp[users.head].score *= 2;
         // console.log(temp.length);
         // console.log(temp[users.head].score);
@@ -223,6 +225,7 @@ router.put("/submit", jwtAuth, (req, res) => {
         // if its not greater than array length
       } else {
         // HERE IS THE WRONG CODE SECTION
+        users.last = answer;
         users.correct = false;
         temp[users.head].score = 1;
 
@@ -266,7 +269,8 @@ router.put("/submit", jwtAuth, (req, res) => {
           head: revised.head,
           tail: revised.tail,
           correct: revised.correct,
-          progress: revised.progress
+          progress: revised.progress,
+          last: revised.last
         },
         { new: true }
       ).then(() => res.sendStatus(200));

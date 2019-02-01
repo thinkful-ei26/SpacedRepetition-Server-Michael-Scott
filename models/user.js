@@ -20,6 +20,10 @@ const schema = new mongoose.Schema({
     type: Boolean,
     default: null
   },
+  last: {
+    type: String,
+    default: null
+  },
   question: [],
   head: { type: Number, default: 0 },
   tail: { type: Number, default: 9 }
