@@ -146,7 +146,7 @@ next level return based on algorithm
 router.get("/next", jwtAuth, (req, res) => {
   const id = req.user.id;
   /*
-  
+
   Create Algorithm logic so that we do these things:
   1. set head value to the new value
     promise to User.something to set value PUT request
@@ -178,7 +178,7 @@ router.put("/submit", jwtAuth, (req, res) => {
   input: answer
   output: modified the correct question with score and changing the nexts/head
 
-  when looping through the elements if the   
+  when looping through the elements if the
 
   */
 
