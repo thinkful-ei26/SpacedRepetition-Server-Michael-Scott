@@ -174,6 +174,7 @@ router.put("/submit", jwtAuth, (req, res) => {
         users.correct = true;
         users.last = answer;
         temp[users.head].score *= 2;
+        temp[users.head].score += 1;
         if (temp[users.head].score >= temp.length) {
           let switcher = temp[users.head].next;
           temp[users.tail].next = users.head;
@@ -209,7 +210,7 @@ router.put("/submit", jwtAuth, (req, res) => {
         let currNode = temp[users.head];
         let prevNode = temp[users.head];
         let i = 0;
-        let target = 3;
+        let target = 2;
 
         while (i < target) {
           prevNode = currNode;
