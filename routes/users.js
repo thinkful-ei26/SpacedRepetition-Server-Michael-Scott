@@ -227,7 +227,7 @@ router.put("/submit", jwtAuth, (req, res) => {
       users.questions = temp;
       users.progress = 0;
       users.questions.forEach(element => {
-        if (element.score >= 4) {
+        if (element.score >= 2) {
           users.progress += 1;
         }
       });
